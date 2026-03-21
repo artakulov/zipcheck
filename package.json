@@ -1,0 +1,34 @@
+{
+  "name": "zipcheck",
+  "version": "1.0.0",
+  "description": "Check home safety scores for any US ZIP code — water quality, lead risk, radon, and more",
+  "bin": {
+    "zipcheck": "./bin/zipcheck.js"
+  },
+  "keywords": [
+    "water-quality",
+    "lead",
+    "radon",
+    "home-safety",
+    "zip-code",
+    "epa",
+    "drinking-water",
+    "environmental",
+    "health"
+  ],
+  "author": "ZipCheckup (https://zipcheckup.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zipcheckup/zipcheck-cli"
+  },
+  "homepage": "https://zipcheckup.com",
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [
+    "bin/zipcheck.js",
+    "README.md",
+    "LICENSE"
+  ]
+}
