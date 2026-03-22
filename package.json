@@ -1,7 +1,7 @@
 {
   "name": "zipcheck",
   "version": "1.0.0",
-  "description": "Check home safety scores for any US ZIP code — water quality, lead risk, radon, and more",
+  "description": "Check home safety scores for any US ZIP code — water quality, lead risk, radon, and more. Powered by zipcheckup.com",
   "bin": {
     "zipcheck": "./bin/zipcheck.js"
   },
@@ -14,13 +14,18 @@
     "epa",
     "drinking-water",
     "environmental",
-    "health"
+    "health",
+    "cli",
+    "usa"
   ],
-  "author": "ZipCheckup (https://zipcheckup.com)",
+  "author": "ZipCheckup <contact@zipcheckup.com> (https://zipcheckup.com)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zipcheckup/zipcheck-cli"
+    "url": "https://github.com/artakulov/zipcheck"
+  },
+  "bugs": {
+    "url": "https://github.com/artakulov/zipcheck/issues"
   },
   "homepage": "https://zipcheckup.com",
   "engines": {
@@ -30,5 +35,8 @@
     "bin/zipcheck.js",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
