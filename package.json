@@ -1,7 +1,7 @@
 {
   "name": "zipcheckup",
   "version": "1.0.0",
-  "description": "Check home safety scores, water quality, and environmental risks for any US ZIP code",
+  "description": "Check home safety scores, water quality, environmental risks, home values, and remediation costs for any US ZIP code. 50+ federal data sources.",
   "bin": {
     "zipcheck": "bin/zipcheck.js"
   },
