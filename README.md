@@ -1,5 +1,10 @@
 # zipcheck
 
+[![npm version](https://img.shields.io/npm/v/zipcheckup?label=npm&color=cb3837)](https://www.npmjs.com/package/zipcheckup)
+[![npm downloads/month](https://img.shields.io/npm/dm/zipcheckup?label=downloads%2Fmo&color=cb3837)](https://www.npmjs.com/package/zipcheckup)
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![Powered by zipcheckup.com](https://img.shields.io/badge/data-zipcheckup.com-1B4D3E.svg)](https://zipcheckup.com)
+
 Home safety report for any US ZIP code, right in your terminal.
 
 ```
