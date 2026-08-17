@@ -16,7 +16,22 @@ const C = {
 function gradeColor(grade) {
   if (grade === 'A' || grade === 'B') return C.green;
   if (grade === 'C') return C.yellow;
-  return C.red;
+  if (grade === 'D' || grade === 'F') return C.red;
+  return C.dim;
+}
+
+function known(value) {
+  return value !== null && value !== undefined;
+}
+
+function displayNumber(value) {
+  return known(value) ? Number(value).toLocaleString() : 'N/A';
+}
+
+function pfasLabel(value) {
+  if (value === true) return 'Detected';
+  if (value === false) return 'Not detected in reported evidence';
+  return 'N/A';
 }
 
 function fetch(url) {
@@ -51,10 +66,12 @@ function printReport(d) {
   console.log(`${C.bold}${gc}  └─────────────────────────────────────────┘${C.reset}`);
   console.log();
 
-  console.log(`  ${C.bold}Grade:${C.reset}  ${gc}${C.bold}${d.grade}${C.reset} ${C.dim}(${d.score}/100)${C.reset}`);
+  const grade = known(d.grade) ? d.grade : 'N/A';
+  const score = known(d.score) ? `${d.score}/100` : 'insufficient coverage';
+  console.log(`  ${C.bold}Grade:${C.reset}  ${gc}${C.bold}${grade}${C.reset} ${C.dim}(${score})${C.reset}`);
   console.log(`  ${C.bold}Location:${C.reset}  ${d.city}, ${d.state}${d.county ? ' (' + d.county + ' County)' : ''}`);
 
-  if (d.totalPopulation) {
+  if (known(d.totalPopulation)) {
     console.log(`  ${C.bold}Population:${C.reset}  ${Number(d.totalPopulation).toLocaleString()}`);
   }
 
@@ -65,38 +82,38 @@ function printReport(d) {
   console.log();
 
   // Violations
-  const hv = d.healthViolations || 0;
-  console.log(`  ${C.bold}Health Violations (5yr):${C.reset}  ${hv > 0 ? C.red : C.green}${hv}${C.reset}`);
-  if (d.totalViolations) {
+  const hv = d.healthViolations;
+  const hvColor = !known(hv) ? C.dim : hv > 0 ? C.red : C.green;
+  console.log(`  ${C.bold}Health Violations:${C.reset}  ${hvColor}${displayNumber(hv)}${C.reset}`);
+  if (known(d.totalViolations)) {
     console.log(`  ${C.bold}Total Violations:${C.reset}  ${d.totalViolations}`);
   }
 
   // Lead
-  if (d.leadLevel) {
+  if (known(d.leadLevel)) {
     const lc = d.leadExceedsActionLevel ? C.red : C.green;
     const note = d.leadExceedsActionLevel ? ' ⚠ EXCEEDS EPA LIMIT' : '';
     console.log(`  ${C.bold}Lead Level:${C.reset}  ${lc}${d.leadLevel} mg/L${note}${C.reset}`);
   }
 
   // Radon
-  if (d.radonZone) {
+  if (known(d.radonZone)) {
     const rc = d.radonZone === 1 ? C.red : d.radonZone === 2 ? C.yellow : C.green;
     console.log(`  ${C.bold}Radon Risk:${C.reset}  ${rc}Zone ${d.radonZone}${d.radonRisk ? ' (' + d.radonRisk + ')' : ''}${C.reset}`);
   }
 
   // PFAS
-  if (d.pfasDetected) {
-    console.log(`  ${C.bold}PFAS:${C.reset}  ${C.red}Detected${C.reset}`);
-  }
+  const pfasColor = d.pfasDetected === true ? C.red : d.pfasDetected === false ? C.green : C.dim;
+  console.log(`  ${C.bold}PFAS:${C.reset}  ${pfasColor}${pfasLabel(d.pfasDetected)}${C.reset}`);
 
   // Flood
-  if (d.floodClaims) {
+  if (known(d.floodClaims)) {
     console.log(`  ${C.bold}Flood Claims:${C.reset}  ${Number(d.floodClaims).toLocaleString()}`);
   }
 
   console.log();
   console.log(`  ${C.dim}Full report: https://zipcheckup.com/report/${d.zip}/${C.reset}`);
-  console.log(`  ${C.dim}Data: EPA SDWIS, FEMA, Census, CDC | CC BY 4.0${C.reset}`);
+  console.log(`  ${C.dim}Source and coverage details: https://zipcheckup.com/report/${d.zip}/${C.reset}`);
   console.log();
 }
 
@@ -109,13 +126,13 @@ async function compare(zip1, zip2) {
 
   const col1 = 22, col2 = 20;
   const rows = [
-    ['Grade', `${d1.grade} (${d1.score})`, `${d2.grade} (${d2.score})`],
-    ['Health Violations', String(d1.healthViolations || 0), String(d2.healthViolations || 0)],
-    ['Lead Level', d1.leadLevel ? `${d1.leadLevel} mg/L` : 'N/A', d2.leadLevel ? `${d2.leadLevel} mg/L` : 'N/A'],
-    ['Radon Zone', d1.radonZone ? `Zone ${d1.radonZone}` : 'N/A', d2.radonZone ? `Zone ${d2.radonZone}` : 'N/A'],
-    ['PFAS', d1.pfasDetected ? 'Detected' : 'None', d2.pfasDetected ? 'Detected' : 'None'],
-    ['Flood Claims', d1.floodClaims ? Number(d1.floodClaims).toLocaleString() : 'N/A', d2.floodClaims ? Number(d2.floodClaims).toLocaleString() : 'N/A'],
-    ['Population', d1.totalPopulation ? Number(d1.totalPopulation).toLocaleString() : 'N/A', d2.totalPopulation ? Number(d2.totalPopulation).toLocaleString() : 'N/A'],
+    ['Grade', `${known(d1.grade) ? d1.grade : 'N/A'} (${known(d1.score) ? d1.score : 'insufficient'})`, `${known(d2.grade) ? d2.grade : 'N/A'} (${known(d2.score) ? d2.score : 'insufficient'})`],
+    ['Health Violations', displayNumber(d1.healthViolations), displayNumber(d2.healthViolations)],
+    ['Lead Level', known(d1.leadLevel) ? `${d1.leadLevel} mg/L` : 'N/A', known(d2.leadLevel) ? `${d2.leadLevel} mg/L` : 'N/A'],
+    ['Radon Zone', known(d1.radonZone) ? `Zone ${d1.radonZone}` : 'N/A', known(d2.radonZone) ? `Zone ${d2.radonZone}` : 'N/A'],
+    ['PFAS', pfasLabel(d1.pfasDetected), pfasLabel(d2.pfasDetected)],
+    ['Flood Claims', displayNumber(d1.floodClaims), displayNumber(d2.floodClaims)],
+    ['Population', displayNumber(d1.totalPopulation), displayNumber(d2.totalPopulation)],
   ];
 
   console.log(`  ${C.dim}${'Metric'.padEnd(col1)}${zip1.padEnd(col2)}${zip2}${C.reset}`);
@@ -130,7 +147,7 @@ async function compare(zip1, zip2) {
 
 function printHelp() {
   console.log(`
-  ${C.bold}zipcheck${C.reset} — Home safety report for any US ZIP code
+  ${C.bold}zipcheck${C.reset} - available home-safety evidence by US ZIP code
 
   ${C.bold}Usage:${C.reset}
     npx zipcheck <zip>                  Check a ZIP code
@@ -144,7 +161,7 @@ function printHelp() {
     npx zipcheck 10001 --json           JSON for scripting
     npx zipcheck --compare 10001 90210
 
-  ${C.dim}Data from zipcheckup.com | 15+ federal sources | CC BY 4.0${C.reset}
+  ${C.dim}Source, vintage, and coverage details are returned by ZipCheckup${C.reset}
 `);
 }
 

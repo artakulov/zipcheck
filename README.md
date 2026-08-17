@@ -1,6 +1,6 @@
 # zipcheck
 
-Home safety report for any US ZIP code, right in your terminal.
+Available home-safety evidence for a US ZIP code, right in your terminal. Unknown and insufficient-coverage values remain explicit.
 
 ```
 npx zipcheck 10001
@@ -28,8 +28,8 @@ npx zipcheck 10001
 
 ## Features
 
-- **Instant safety grade** (A–F) for any of 29,000+ US ZIP codes
-- **Water quality** — EPA violations, lead levels, PFAS detection
+- **Versioned safety grade** when all required model domains have sufficient evidence
+- **Water evidence** with unknown values kept distinct from measured zero
 - **Environmental risks** — radon zones, flood claims, air quality
 - **Compare two ZIPs** side by side
 - **JSON output** for scripting and automation
@@ -75,4 +75,4 @@ Rate limit: 100 requests/minute. For bulk access, contact data@zipcheckup.com.
 
 MIT — Data is CC BY 4.0 (attribution required).
 
-Built by [ZipCheckup](https://zipcheckup.com) — Home Safety Reports for Every US ZIP Code.
+Built by [ZipCheckup](https://zipcheckup.com). Check the full report for source, vintage, and geographic-coverage limitations.
