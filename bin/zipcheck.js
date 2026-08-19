@@ -4,8 +4,25 @@
 
 const https = require('https');
 
-const VERSION = '1.0.0';
+const VERSION = '2.0.0';
 const API_BASE = 'https://api.zipcheckup.com/v1';
+
+// 2026-08-19: the API stopped serving anonymous callers. Version 1.0.0 of this
+// CLI sends no key and now fails for everyone who installed it, which is why
+// this is a major version rather than a patch — the way you invoke it changed.
+//
+// The key is read from the environment rather than a config file or a flag,
+// because a flag ends up in shell history and a config file ends up in a repo.
+const API_KEY = process.env.ZIPCHECKUP_API_KEY || '';
+
+const NO_KEY_MESSAGE = [
+  'This tool now needs a ZipCheckup API key.',
+  '',
+  '  1. Get a free one at https://zipcheckup.com/api/pricing/ (no card required)',
+  '  2. export ZIPCHECKUP_API_KEY=zc_live_...',
+  '',
+  'Free tier is 100 requests per day. Each ZIP lookup uses two.',
+].join('\n');
 
 const C = {
   reset: '\x1b[0m', bold: '\x1b[1m', dim: '\x1b[2m',
@@ -36,8 +53,19 @@ function pfasLabel(value) {
 
 function fetch(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { 'User-Agent': 'zipcheck-cli/' + VERSION } }, (res) => {
+    const headers = { 'User-Agent': 'zipcheck-cli/' + VERSION };
+    if (API_KEY) headers['X-API-Key'] = API_KEY;
+    https.get(url, { headers }, (res) => {
       if (res.statusCode === 404) return reject(new Error('ZIP code not found'));
+      // Say what to do rather than print a status code. A bare "API error: 401"
+      // sends the reader to a search engine; this sends them to a key.
+      if (res.statusCode === 401) return reject(new Error(NO_KEY_MESSAGE));
+      if (res.statusCode === 429) {
+        return reject(new Error(
+          'Daily rate limit reached. The free tier allows 100 requests per day and resets at '
+          + 'midnight UTC. Higher limits: https://zipcheckup.com/api/pricing/',
+        ));
+      }
       if (res.statusCode !== 200) return reject(new Error('API error: ' + res.statusCode));
       let data = '';
       res.on('data', (chunk) => { data += chunk; });

@@ -1,6 +1,6 @@
 {
   "name": "zipcheckup",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Inspect available ZipCheckup home-safety evidence by U.S. ZIP, preserving unknown and insufficient-coverage states.",
   "bin": {
     "zipcheck": "bin/zipcheck.js"
